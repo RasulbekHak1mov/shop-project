@@ -1,6 +1,11 @@
 const express = require('express')
+const mongoose = require('mongoose');
+const flash = require(`connect-flash`)
+const session = require(`express-session`)
 const app = express()
 const { create } = require(`express-handlebars`)
+const dotenv = require('dotenv');
+dotenv.config();
 
 const AuthRouter = require('./routes/auth.js')
 const ProductsRouter = require('./routes/products.js')
@@ -11,11 +16,28 @@ app.engine(`hbs`, hbs.engine)
 app.set('view engine', 'hbs')
 app.set('views', './views')
 
+app.use(express.static('public'))
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
+
+// app.use(express.cookieParser('keyboard cat'))
+// app.use(express.session({ cookie: { maxAge: 60000 } }))
+app.use(session({secret: 'KH', resave: false, saveUninitialized: false}))
+app.use(flash())
+
 app.use(AuthRouter)
 app.use(ProductsRouter)
 
-const PORT = process.env.PORT || 9000
-app.listen(PORT, () => {
-    console.log(`Server is running on port: ${PORT}`)
-    console.log(`http://127.0.0.1:${PORT}/`)
-})
+function startApp() {
+    try {
+        mongoose.connect(process.env.MONGO_URI)
+        const PORT = process.env.PORT || 5500
+        app.listen(PORT, () => {
+            console.log(`Server is running on port: ${PORT}`)
+        })
+    } catch (error) {
+        console.log(error);
+    }
+
+}
+startApp()
