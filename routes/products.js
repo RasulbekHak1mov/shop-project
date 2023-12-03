@@ -70,5 +70,11 @@ router.post('/add-products', userMiddleware, async (req, res) => {
     await Product.create({ ...req.body, user: req.userId })
     res.redirect('/')
 })
+router.post('/delete-product/:id', async (req, res) => {
+    const id = req.params.id;
+
+    await Product.findByIdAndDelete(id)
+    res.redirect('/')
+})
 
 module.exports = router;
