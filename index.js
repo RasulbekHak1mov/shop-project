@@ -3,17 +3,19 @@ const mongoose = require('mongoose');
 const flash = require(`connect-flash`)
 const session = require(`express-session`)
 const cookieParser = require('cookie-parser');
-const varMidddleware = require('./middleware/var.js')
+const utils = require('./utils')
 const app = express()
 const { create } = require(`express-handlebars`)
 const dotenv = require('dotenv');
 dotenv.config();
 
+const varMidddleware = require('./middleware/var.js')
 const AuthRouter = require('./routes/auth.js')
 const ProductsRouter = require('./routes/products.js');
+const userMiddleware = require('./middleware/user.js');
 
 
-const hbs = create({ defaultLayout: 'main', extname: 'hbs' })
+const hbs = create({ defaultLayout: 'main', extname: 'hbs', helpers: utils})
 app.engine(`hbs`, hbs.engine)
 app.set('view engine', 'hbs')
 app.set('views', './views')
@@ -24,9 +26,10 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
 app.use(cookieParser())
 app.use(varMidddleware)
+app.use(userMiddleware)
 // app.use(express.cookieParser('keyboard cat'))
 // app.use(express.session({ cookie: { maxAge: 60000 } }))
-app.use(session({secret: 'KH', resave: false, saveUninitialized: false}))
+app.use(session({ secret: 'KH', resave: false, saveUninitialized: false }))
 app.use(flash())
 
 app.use(AuthRouter)

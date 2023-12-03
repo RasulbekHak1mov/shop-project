@@ -3,7 +3,7 @@ const User = require("../models/User")
 
 module.exports = async function (req, res, next){
     if (!req.cookies.token) {
-        res.redirect('/login')
+        next()
         return
     }
 
