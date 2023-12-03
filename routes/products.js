@@ -36,19 +36,19 @@ router.get('/edit-product/:id', async (req, res) => {
     const product = await Product.findById(id).populate('user').lean()
 
     res.render('edit-product', {
-        product: product
+        product: product,
+        errorEditProduct: req.flash('errorEditProduct')
     })
 })
 router.post('/edit-product/:id', async (req, res) => {
     const { title, description, image, price } = req.body
     const id = req.params.id;
     if (!title || !description || !image || !price) {
-        req.flash('errorEditProduct', 'All feilds is required')
         res.redirect(`/edit-product/${id}`)
+        req.flash('errorEditProduct', 'All feilds is required')
         return
     }
-    const product = await Product.findByIdAndUpdate(id, req.body, { new: true })
-
+    await Product.findByIdAndUpdate(id, req.body, { new: true })
     res.redirect('/products')
 })
 router.get(`/add`, authMiddleware, (req, res) => {
