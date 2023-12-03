@@ -7,12 +7,7 @@ router.get(`/`, (req, res) => {
         title: "Main page",
     })
 })
-router.get(`/add`, (req, res) => {
-    res.render('add', {
-        title: "Add products",
-        isAdd: true
-    })
-})
+
 router.get(`/products`, (req, res) => {
     res.render('products', {
         title: "Products",
@@ -20,5 +15,16 @@ router.get(`/products`, (req, res) => {
     })
 })
 
+router.get(`/add`, (req, res) => {
+    res.render('add', {
+        title: "Add products",
+        isAdd: true
+    })
+})
+
+router.post('/add-products', (req, res) => {
+    console.log(req.body)
+    res.redirect('/')
+})
 
 module.exports = router;
