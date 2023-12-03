@@ -2,8 +2,13 @@ const { Router } = require('express')
 const bcrypt = require('bcrypt')
 const router = Router()
 const User = require(`../models/User.js`)
+const generateJWTToken = require('../services/token.js')
+const { redirect } = require('statuses')
 
 router.get(`/login`, (req, res) => {
+    if (req.cookies.token) {
+        res.redirect('/')
+    }
     res.render('login', {
         title: "Login page",
         isLogin: true,
@@ -16,6 +21,10 @@ router.get(`/register`, (req, res) => {
         isRegister: true,
         registerError: req.flash(`registerError`)
     })
+})
+router.get('/logout', (req, res) => {
+    res.clearCookie('token')
+    res.redirect('/')
 })
 router.post('/login', async (req, res) => {
     const { email, password } = req.body
@@ -33,7 +42,11 @@ router.post('/login', async (req, res) => {
         return
     }
 
+    const token = generateJWTToken(existUser._id)
+    res.cookie('token', token, { httpOnly: true, secure: true })
+
     const isPassEqual = await bcrypt.compare(password, existUser.password)
+
     if (!isPassEqual) {
         req.flash('loginError', 'Wrong password')
         res.redirect('/login')
@@ -65,6 +78,8 @@ router.post('/register', async (req, res) => {
         password: hashedPassword,
     }
     const user = await User.create(userData)
+    const token = generateJWTToken(user._id)
+    res.cookie('token', token, { httpOnly: true, secure: true })
     res.redirect('/')
 })
 
