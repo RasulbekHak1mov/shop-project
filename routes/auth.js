@@ -52,7 +52,6 @@ router.post('/login', async (req, res) => {
         res.redirect('/login')
         return
     }
-    console.log(existUser);
     res.redirect('/')
 })
 router.post('/register', async (req, res) => {

@@ -8,7 +8,7 @@ const router = Router()
 router.get(`/`, async (req, res) => {
     const products = await Product.find().lean()
     res.render('index', {
-        title: "Main page",
+        title: "Boom Shop",
         products: products.reverse(),
         userId: req.userId ? req.userId.toString() : null,
     })
@@ -23,7 +23,15 @@ router.get(`/products`, async (req, res) => {
         myProducts: myProducts,
     })
 })
+router.get('/product/:id', async (req, res) => {
+    const id = req.params.id
+    const product = await Product.findById(id).populate('user').lean()
 
+    res.render('product', {
+        product: product,
+    })
+
+})
 router.get(`/add`, authMiddleware, (req, res) => {
     res.render('add', {
         title: "Add products",
